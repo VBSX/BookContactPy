@@ -44,8 +44,12 @@ class ContactsWidget(QtWidgets.QWidget):
         
     def construct_table(self):
         sql_data = self.database.get_all_contacts()
+        self.table_widget.setRowCount(50)
+        tablerow = 0
+        
         for row in sql_data:
-            print(row)
+            self.table_widget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
+            
 
 class AddNewContactsWindow(QtWidgets.QWidget):
     def __init__(self):
