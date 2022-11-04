@@ -1,0 +1,4 @@
+Erro ao retornar dados do nomecodigo do erro no such table: cadastro_contatos do dia 04/11/22 as 17:44:55
+
+Erro ao retornar dados do nome, codigo do erro no such table: cadastro_contatos do dia 04/11/22 as 17:45:16
+
