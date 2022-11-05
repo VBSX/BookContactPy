@@ -1,15 +1,15 @@
 from database_handle import *
 import sys
-from PySide6 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide6 import QtCore, QtWidgets
 
+        
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Booking')
         self.resize(400, 200)
-        self.window_add_contact = AddNewContactsWindow()
-        self.window_see_contacts = ContactsWidget()
+        self.setStyleSheet("padding :15px")
+        
         
         self.btn_contacts_show = QtWidgets.QPushButton('Ver os Contatos Salvos', clicked=self.open_contacts_window)
         self.btn_add_contact_window = QtWidgets.QPushButton('Adicionar um novo contato', clicked=self.open_window_add_contact)
@@ -20,11 +20,12 @@ class MyWidget(QtWidgets.QWidget):
         
         
     def open_contacts_window(self):
+        self.window_see_contacts = ContactsWidget()
         self.close()
         self.window_see_contacts.show()
         
     def open_window_add_contact(self):
-        
+        self.window_add_contact = AddNewContactsWindow()
         self.close()
         self.window_add_contact.show()
 
@@ -32,16 +33,29 @@ class MyWidget(QtWidgets.QWidget):
 class ContactsWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("padding :15px")
+        self.resize(850, 350)
         self.database = ConsultaBanco()
-        
-        self.table_widget = QtWidgets.QTableWidget()
+        self.setWindowTitle('Contatos')
+        self.window_add_contact = AddNewContactsWindow()
+        self.table_widget = QtWidgets.QTableWidget(5,5)
+        self.table_widget.setColumnCount(3)
+        self.table_widget.resizeColumnsToContents()
+        self.table_widget.resizeRowsToContents()
+        self.table_widget.setColumnWidth(0,150)
+        self.table_widget.setColumnWidth(1,150)
         self.table_widget.setColumnWidth(2, 250)
-        self.table_widget.setColumnWidth(0,250)
+        self.table_widget.horizontalHeader().setStretchLastSection(True)
         self.table_widget.setHorizontalHeaderLabels(['nome', 'numero', 'email'])
+        
+        self.button_add_contact = QtWidgets.QPushButton('Adicionar um novo contato',clicked = self.open_window_add_contact)
+        
         
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.table_widget)
+        self.layout.addWidget(self.button_add_contact)
         
+        self.construct_table()
     def construct_table(self):
         sql_data = self.database.get_all_contacts()
         self.table_widget.setRowCount(50)
@@ -49,13 +63,22 @@ class ContactsWidget(QtWidgets.QWidget):
         
         for row in sql_data:
             self.table_widget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
+            self.table_widget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
+            self.table_widget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
+            tablerow+=1
+            
+    def open_window_add_contact(self):
+        
+        self.close()
+        self.window_add_contact.show()
             
 
 class AddNewContactsWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("padding :15px")
         self.resize(400, 200)
-        self.window_contact = ContactsWidget()
+        
         self.name = QtWidgets.QLineEdit(alignment=QtCore.Qt.AlignCenter)
         self.name.setPlaceholderText("Coloque o nome")
         
@@ -75,12 +98,12 @@ class AddNewContactsWindow(QtWidgets.QWidget):
         self.layout.addWidget(self.btn_call_database_add)
         
     def send_database(self):
-        name = self.name.text()
-        email = self.email.text()
-        phone_number = self.phone_number.text()
-        db = EnvioBanco(name, email, phone_number)
+        name = str(self.name.text())
+        email = str(self.email.text())
+        phone_number = str(self.phone_number.text())
+        db = EnvioBanco(name,phone_number, email )
         db_send = db.send_dados_para_tabela_contatos()
-        
+        print(name, email, phone_number)
         if self.verify_fields() == True:
             
             if db_send == True:
@@ -108,14 +131,17 @@ class AddNewContactsWindow(QtWidgets.QWidget):
         QtWidgets.QMessageBox.about(self, 'DIALOG', text)
         
     def show_contact_window(self):
+        self.window_contact = ContactsWidget()
         self.close()
         self.window_contact.show()
         
-class BookContact:
+class WindowHandle(QtWidgets.QWidget):
     def __init__(self):
+        super().__init__()
         pass
-        
-
+    def close_main_window(self):
+       pass 
+    
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     widget = MyWidget()

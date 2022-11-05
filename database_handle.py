@@ -4,7 +4,7 @@ from system_handle import *
 class EnvioBanco:
     def __init__(self, nome_do_contato, numero_do_telefone, email):
         self.nome_do_contato = nome_do_contato
-        self.numero_do_telefone = numero_do_telefone
+        self.numero_do_telefone = str(numero_do_telefone)
         self.email = email
         self.sys_date = HorarioDoSistema()
         self.data_agora = self.sys_date.get_data_sistema()
@@ -18,7 +18,7 @@ class EnvioBanco:
     def send_dados_para_tabela_contatos(self):
         try:
             self.cursor.execute(
-                "CREATE TABLE IF NOT EXISTS cadastro_contatos (nome text, numero numeric, email text, "
+                "CREATE TABLE IF NOT EXISTS cadastro_contatos (nome text, numero text, email text, "
                 "data_consulta numeric, hora_consulta numeric) ")
             self.cursor.execute(
                 "INSERT INTO cadastro_contatos (nome, numero, email, data_consulta, hora_consulta) "
